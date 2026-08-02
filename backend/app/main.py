@@ -1,14 +1,19 @@
 from fastapi import FastAPI
 
-app=FastAPI(
-    title="CodePilot-ai",
-    description="A Local AI Software engineering assistant",
-    version="0.1.0",
+from backend.app.routes.chat import router as chat_router
+from backend.app.routes.repository import router as repository_router
+
+app = FastAPI(
+    title="CodePilot AI",
+    description="A local AI software engineering assistant",
+    version="0.1.0"
 )
+
+app.include_router(chat_router)
+app.include_router(repository_router)
 
 @app.get("/")
 def root():
     return {
-        "message": "Welcome to CodePilot-ai!"
+        "message": "Welcome to CodePilot AI!"
     }
-
