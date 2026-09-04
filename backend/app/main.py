@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from backend.app.routes.chat import router as chat_router
 from backend.app.routes.repository import router as repository_router
 
+
 app = FastAPI(
     title="CodePilot AI",
     description="A local AI software engineering assistant",
