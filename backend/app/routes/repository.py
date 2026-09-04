@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from backend.app.services.repository_service import (
     list_source_files,
     read_file_content,
+    get_project_tree,
 )
 
 router = APIRouter(prefix="/repository", tags=["Repository"])
@@ -31,6 +32,21 @@ def get_file_content(path: str):
     try:
         content = read_file_content(path)
         return {"content": content}
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+@router.get("/tree")
+def get_repository_tree(path: str):
+    """
+    Return the structure of a project.
+    """
+    try:
+        tree = get_project_tree(path)
+        return tree
 
     except Exception as e:
         raise HTTPException(

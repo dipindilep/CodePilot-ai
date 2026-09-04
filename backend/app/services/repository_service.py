@@ -24,6 +24,15 @@ SUPPORTED_EXTENSIONS = {
     ".mm",      # Objective-C++
 }
 
+IGNORED_DIRECTORIES = {
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "node_modules",
+    ".idea",
+    ".vscode",
+}
 
 def list_source_files(project_path: str) -> list[str]:
     """
@@ -55,6 +64,10 @@ def list_source_files(project_path: str) -> list[str]:
 
         # Skip directories
         if not file.is_file():
+            continue
+
+        # Skip ignored directories
+        if any(ignored_dir in file.parts for ignored_dir in IGNORED_DIRECTORIES):
             continue
 
         # Keep only supported source files
@@ -89,3 +102,56 @@ def read_file_content(file_path: str) -> str:
 
     with open(file, "r", encoding="utf-8") as f:
         return f.read()
+
+def get_project_tree(project_path: str) -> dict:
+    """
+    Build a structured tree representing a project.
+
+    Args:
+        project_path: Path to the project directory.
+
+    Returns:
+        Dictionary containing project directories and source files.
+    """
+
+    project = Path(project_path)
+
+    if not project.exists():
+        raise FileNotFoundError(
+            f"Project '{project_path}' does not exist."
+        )
+
+    if not project.is_dir():
+        raise NotADirectoryError(
+            f"'{project_path}' is not a directory."
+        )
+
+    def build_tree(directory: Path) -> dict:
+        tree = {
+            "name": directory.name,
+            "type": "directory",
+            "children": []
+        }
+
+        for item in sorted(directory.iterdir()):
+
+            if item.name in IGNORED_DIRECTORIES:
+                continue
+
+            if item.is_dir():
+                tree["children"].append(
+                    build_tree(item)
+                )
+
+            elif (
+                item.is_file()
+                and item.suffix.lower() in SUPPORTED_EXTENSIONS
+            ):
+                tree["children"].append({
+                    "name": item.name,
+                    "type": "file"
+                })
+
+        return tree
+
+    return build_tree(project)
