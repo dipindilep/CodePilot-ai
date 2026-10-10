@@ -10,6 +10,7 @@ class CodeChunk:
     file_path: str
     start_line: int
     end_line: int
+    chunk_number: int | None = None
 
 #chunking function
 
