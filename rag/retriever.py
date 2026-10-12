@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 
 from rag.embeddings import embed_query
@@ -13,6 +12,7 @@ class RetrievedChunk:
     type: str
     language: str
     start_line: int
+
     end_line: int
     chunk_number: int
     distance: float
